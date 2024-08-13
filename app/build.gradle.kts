@@ -79,10 +79,14 @@ dependencies {
     // Hilt-dagger
     implementation("com.google.dagger:hilt-android:2.49")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.firebase.storage)
     kapt("com.google.dagger:hilt-android-compiler:2.49")
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    // coil for image
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Testing
     testImplementation(libs.junit)

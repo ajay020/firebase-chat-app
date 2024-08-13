@@ -29,8 +29,8 @@ fun AuthScreen(authViewModel: AuthViewModel = hiltViewModel(), onAuthSuccess: ()
         onSignInClick = { email, password ->
             authViewModel.signInWithEmailPassword(email, password)
         },
-        onSignUpClick = { email, password ->
-            authViewModel.signUpWithEmailPassword(email, password)
+        onSignUpClick = { displayName,  email, password ->
+            authViewModel.signUpWithEmailPassword(displayName, email, password)
         },
         onAuthSuccess = onAuthSuccess
     )
@@ -40,9 +40,12 @@ fun AuthScreen(authViewModel: AuthViewModel = hiltViewModel(), onAuthSuccess: ()
 fun AuthScreenContent(
     authState: AuthState,
     onSignInClick: (String, String) -> Unit,
-    onSignUpClick: (String, String) -> Unit,
+    onSignUpClick: (String, String, String) -> Unit,
     onAuthSuccess: () -> Unit
 ) {
+    var displayName by remember {
+        mutableStateOf("")
+    }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLogin by remember { mutableStateOf(true) }
@@ -80,6 +83,11 @@ fun AuthScreenContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
+        if(!isLogin){
+            DisplayNameField(displayName = displayName, onDisplayNameChange = { displayName = it })
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
         EmailField(email = email, onEmailChange = { email = it })
         Spacer(modifier = Modifier.height(8.dp))
         PasswordField(password = password, onPasswordChange = { password = it })
@@ -90,7 +98,7 @@ fun AuthScreenContent(
                 if (isLogin) {
                     onSignInClick(email, password)
                 } else {
-                    onSignUpClick(email, password)
+                    onSignUpClick(displayName, email, password)
                 }
             }
         )
@@ -101,6 +109,16 @@ fun AuthScreenContent(
             Text(message, color = MaterialTheme.colorScheme.error)
         }
     }
+}
+
+@Composable
+fun DisplayNameField(displayName: String, onDisplayNameChange: (String) -> Unit) {
+    TextField(
+        value = displayName,
+        onValueChange = onDisplayNameChange,
+        label = { Text("Display name") },
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
@@ -147,7 +165,7 @@ fun AuthScreenPreview() {
     AuthScreenContent(
         authState = AuthState.Loading,
         onSignInClick = { _, _ -> },
-        onSignUpClick = { _, _ -> },
+        onSignUpClick = {_, _, _ -> },
         onAuthSuccess = {}
     )
 }

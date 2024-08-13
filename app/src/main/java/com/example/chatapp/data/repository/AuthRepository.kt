@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     suspend fun signUpWithEmailPassword(
+        displayName:String,
         email: String,
         password: String
     ): Flow<Result<FirebaseUser?>>
