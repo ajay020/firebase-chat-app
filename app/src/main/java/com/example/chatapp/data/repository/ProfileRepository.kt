@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 interface ProfileRepository {
     suspend fun getUserProfile(): Result<UserProfile?>
-    suspend fun saveUserProfile(userProfile: UserProfile): Result<Unit>
+    suspend fun updateUserProfile(userProfile: UserProfile): Result<Unit>
 }
 
 class ProfileRepositoryImpl @Inject constructor(
@@ -36,11 +36,31 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveUserProfile(userProfile: UserProfile): Result<Unit> {
+    override suspend fun updateUserProfile(userProfile: UserProfile): Result<Unit> {
         return try {
-            val userId = firebaseAuth.currentUser?.uid
-                ?: return Result.failure(Exception("User not authenticated"))
-            userCollection.document(userId).set(userProfile).await()
+            val userId = userProfile.uid
+            val userDocRef = userCollection.document(userId)
+
+            // Get the document to check if it exists
+            val documentSnapshot = userDocRef.get().await()
+
+            if (documentSnapshot.exists()) {
+                // Document exists, so update it
+                val updates = mutableMapOf<String, Any?>()
+                updates["uid"] = userId
+                userProfile.displayName.let {
+                    updates["displayName"] = it
+                }
+                userProfile.profilePictureUrl?.let {
+                    updates["profilePictureUrl"] = it
+                }
+
+                userCollection.document(userId).update(updates).await()
+            } else {
+                // Document doesn't exist, so create it
+                userDocRef.set(userProfile).await()
+            }
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

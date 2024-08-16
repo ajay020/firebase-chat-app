@@ -29,7 +29,7 @@ fun AuthScreen(authViewModel: AuthViewModel = hiltViewModel(), onAuthSuccess: ()
         onSignInClick = { email, password ->
             authViewModel.signInWithEmailPassword(email, password)
         },
-        onSignUpClick = { displayName,  email, password ->
+        onSignUpClick = { displayName, email, password ->
             authViewModel.signUpWithEmailPassword(displayName, email, password)
         },
         onAuthSuccess = onAuthSuccess
@@ -43,7 +43,7 @@ fun AuthScreenContent(
     onSignUpClick: (String, String, String) -> Unit,
     onAuthSuccess: () -> Unit
 ) {
-    var displayName by remember {
+    val displayName by remember {
         mutableStateOf("")
     }
     var email by remember { mutableStateOf("") }
@@ -83,16 +83,17 @@ fun AuthScreenContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        if(!isLogin){
-            DisplayNameField(displayName = displayName, onDisplayNameChange = { displayName = it })
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+//        if(!isLogin){
+//            DisplayNameField(displayName = displayName, onDisplayNameChange = { displayName = it })
+//            Spacer(modifier = Modifier.height(8.dp))
+//        }
 
         EmailField(email = email, onEmailChange = { email = it })
         Spacer(modifier = Modifier.height(8.dp))
         PasswordField(password = password, onPasswordChange = { password = it })
         Spacer(modifier = Modifier.height(16.dp))
         AuthButton(
+            isEnabled = email.isNotEmpty() && password.isNotEmpty(),
             isLogin = isLogin,
             onClick = {
                 if (isLogin) {
@@ -111,15 +112,15 @@ fun AuthScreenContent(
     }
 }
 
-@Composable
-fun DisplayNameField(displayName: String, onDisplayNameChange: (String) -> Unit) {
-    TextField(
-        value = displayName,
-        onValueChange = onDisplayNameChange,
-        label = { Text("Display name") },
-        modifier = Modifier.fillMaxWidth()
-    )
-}
+//@Composable
+//fun DisplayNameField(displayName: String, onDisplayNameChange: (String) -> Unit) {
+//    TextField(
+//        value = displayName,
+//        onValueChange = onDisplayNameChange,
+//        label = { Text("Display name") },
+//        modifier = Modifier.fillMaxWidth()
+//    )
+//}
 
 @Composable
 fun EmailField(email: String, onEmailChange: (String) -> Unit) {
@@ -143,8 +144,9 @@ fun PasswordField(password: String, onPasswordChange: (String) -> Unit) {
 }
 
 @Composable
-fun AuthButton(isLogin: Boolean, onClick: () -> Unit) {
+fun AuthButton(isEnabled: Boolean, isLogin: Boolean, onClick: () -> Unit) {
     Button(
+        enabled = isEnabled,
         onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -165,7 +167,7 @@ fun AuthScreenPreview() {
     AuthScreenContent(
         authState = AuthState.Loading,
         onSignInClick = { _, _ -> },
-        onSignUpClick = {_, _, _ -> },
+        onSignUpClick = { _, _, _ -> },
         onAuthSuccess = {}
     )
 }

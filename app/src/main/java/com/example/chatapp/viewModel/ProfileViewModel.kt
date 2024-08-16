@@ -7,14 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.chatapp.data.model.UserProfile
 import com.example.chatapp.data.repository.ProfileRepository
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,7 +52,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun saveProfile(displayName: String, newProfilePictureUri: Uri?) {
+    fun updateProfile(displayName: String, newProfilePictureUri: Uri?) {
         val userId = firebaseAuth.currentUser?.uid
             ?: return
         val userProfile = UserProfile(
@@ -62,12 +60,12 @@ class ProfileViewModel @Inject constructor(
             displayName = displayName,
             profilePictureUrl = newProfilePictureUri?.toString()
         )
+        val currentUserProfile = (profileState.value as? ProfileState.Success)?.userProfile
 
         viewModelScope.launch {
             _profileState.value = ProfileState.Loading
-            val currentUserProfile = (profileState.value as? ProfileState.Success)?.userProfile
 
-            if (newProfilePictureUri != null) {
+            if (newProfilePictureUri != null && newProfilePictureUri.toString() != currentUserProfile?.profilePictureUrl) {
                 // Delete the old profile picture if it exists
                 currentUserProfile?.profilePictureUrl?.let { oldUrl ->
                     deleteOldProfilePicture(oldUrl)
@@ -79,8 +77,7 @@ class ProfileViewModel @Inject constructor(
                 userProfile.profilePictureUrl = uri
             }
 
-
-            val result = profileRepository.saveUserProfile(userProfile)
+            val result = profileRepository.updateUserProfile(userProfile)
             _profileState.value = when {
                 result.isSuccess -> ProfileState.Success(userProfile)
                 else -> ProfileState.Error(

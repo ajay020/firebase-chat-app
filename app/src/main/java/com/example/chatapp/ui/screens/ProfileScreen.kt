@@ -71,7 +71,7 @@ fun ProfileScreen(
             modifier = Modifier.padding(it),
             profileState = profileState,
             updateProfile = { displayName, profilePictureUri ->
-                profileViewModel.saveProfile(displayName, profilePictureUri)
+                profileViewModel.updateProfile(displayName, profilePictureUri)
             },
             signOut = signOut
         )
@@ -88,7 +88,6 @@ fun ProfileScreenContent(
     signOut: () -> Unit,
 ) {
     var displayName by remember { mutableStateOf("") }
-//    var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val launcher = rememberLauncherForActivityResult(
@@ -102,7 +101,7 @@ fun ProfileScreenContent(
     )
 
     val painter = rememberAsyncImagePainter(
-        model = selectedImageUri,
+        model = selectedImageUri ?: "",
         placeholder = painterResource(id = R.drawable.ic_person),
         error = painterResource(id = R.drawable.ic_error),
         onError = {
