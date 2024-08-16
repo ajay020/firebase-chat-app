@@ -222,5 +222,4 @@ private fun ProfileScreenContentPreview() {
         updateProfile = { _, _ -> },
         signOut = {}
     )
-
 }
