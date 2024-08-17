@@ -6,6 +6,8 @@ import com.example.chatapp.data.repository.ChatRepository
 import com.example.chatapp.data.repository.ChatRepositoryImpl
 import com.example.chatapp.data.repository.ProfileRepository
 import com.example.chatapp.data.repository.ProfileRepositoryImpl
+import com.example.chatapp.data.repository.UserRepository
+import com.example.chatapp.data.repository.UserRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -42,6 +44,11 @@ object ChatModule {
     @Singleton
     fun provideAuthRepository(firebaseAuth: FirebaseAuth): AuthRepository {
         return AuthRepositoryImpl(firebaseAuth)
+    }
+    @Provides
+    @Singleton
+    fun provideUserRepository(firestore: FirebaseFirestore): UserRepository {
+        return UserRepositoryImpl(firestore)
     }
 
     @Provides

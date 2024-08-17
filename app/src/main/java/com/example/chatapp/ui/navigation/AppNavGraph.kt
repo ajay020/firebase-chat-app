@@ -9,12 +9,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.ui.screens.AuthScreen
 import com.example.chatapp.ui.screens.ChatScreen
 import com.example.chatapp.ui.screens.ProfileScreen
+import com.example.chatapp.ui.screens.UserListScreen
 import com.example.chatapp.viewModel.AuthViewModel
 
 object Screens {
     const val AUTH = "auth"
     const val CHAT = "chat"
     const val PROFILE = "profile"
+    const val USER_LIST = "user_list"
 }
 
 @Composable
@@ -29,7 +31,7 @@ fun AppNavGraph(
         composable(Screens.AUTH) {
             AuthScreen(
                 onAuthSuccess = {
-                    navController.navigate(Screens.CHAT)
+                    navController.navigate(Screens.USER_LIST)
                 }
             )
         }
@@ -59,6 +61,10 @@ fun AppNavGraph(
                     navController.navigate(Screens.CHAT)
                 }
             )
+        }
+
+        composable(Screens.USER_LIST) {
+            UserListScreen()
         }
     }
 }
