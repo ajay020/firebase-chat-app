@@ -116,7 +116,7 @@ class AuthViewModel @Inject constructor(
 
     fun getCurrentUser(): FirebaseUser? = authRepository.getCurrentUser()
 
-    fun generateDisplayName(email: String): String {
+    private fun generateDisplayName(email: String): String {
         email.split("@").let {
             return it[0]
         }

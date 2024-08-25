@@ -201,6 +201,9 @@ fun ProfileScreenTopBar(modifier: Modifier = Modifier, navigateToChat: () -> Uni
         modifier = modifier
             .fillMaxWidth(),
         navigationIcon = {
+
+
+
             IconButton(onClick = navigateToChat) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,

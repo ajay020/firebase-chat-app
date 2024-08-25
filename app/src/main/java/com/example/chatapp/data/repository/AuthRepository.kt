@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
@@ -21,10 +22,12 @@ interface AuthRepository {
 
     fun signOut()
     fun getCurrentUser(): FirebaseUser?
+    fun updateUserStatus(isOnline: Boolean)
 }
 
 class AuthRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
 ) : AuthRepository {
 
     override suspend fun signUpWithEmailPassword(
@@ -35,14 +38,6 @@ class AuthRepositoryImpl @Inject constructor(
         try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             val user = result.user
-//
-//            user?.let {
-//                val profileUpdates = userProfileChangeRequest {
-//                    this.displayName = displayName
-//                }
-//                it.updateProfile(profileUpdates).await()
-//                emit(Result.success(it))
-//            }
             emit(Result.success(user))
 
         } catch (e: Exception) {
@@ -62,7 +57,20 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun updateUserStatus(isOnline: Boolean) {
+        val userId = firebaseAuth.currentUser?.uid
+        val userRef = userId?.let { firestore.collection("users").document(it) }
+
+        userRef?.update(
+            mapOf(
+                "isOnline" to isOnline,
+                "lastSeen" to if (isOnline) null else System.currentTimeMillis()
+            )
+        )
+    }
+
     override fun signOut() {
+        updateUserStatus(false)
         firebaseAuth.signOut()
     }
 
