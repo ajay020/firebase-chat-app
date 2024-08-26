@@ -77,7 +77,7 @@ class ProfileViewModel @Inject constructor(
                 userProfile.profilePictureUrl = uri
             }
 
-            val result = profileRepository.updateUserProfile(userProfile)
+            val result = profileRepository.saveUserProfile(userProfile)
             _profileState.value = when {
                 result.isSuccess -> ProfileState.Success(userProfile)
                 else -> ProfileState.Error(

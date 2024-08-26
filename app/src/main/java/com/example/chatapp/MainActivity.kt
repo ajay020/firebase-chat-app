@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import com.example.chatapp.data.repository.AuthRepository
 import com.example.chatapp.ui.navigation.AppNavGraph
 import com.example.chatapp.ui.theme.ChatAppTheme
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -38,4 +39,5 @@ class MainActivity : ComponentActivity() {
         Log.d("MainActivity", "onStop called")
         authRepository.updateUserStatus(false)
     }
+
 }

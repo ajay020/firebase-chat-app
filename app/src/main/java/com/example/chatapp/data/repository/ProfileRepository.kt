@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 interface ProfileRepository {
     suspend fun getUserProfile(): Result<UserProfile?>
-    suspend fun updateUserProfile(userProfile: UserProfile): Result<Unit>
+    suspend fun saveUserProfile(userProfile: UserProfile): Result<Unit>
 }
 
 class ProfileRepositoryImpl @Inject constructor(
@@ -36,7 +36,7 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateUserProfile(userProfile: UserProfile): Result<Unit> {
+    override suspend fun saveUserProfile(userProfile: UserProfile): Result<Unit> {
         return try {
             val userId = userProfile.uid
             val userDocRef = userCollection.document(userId)

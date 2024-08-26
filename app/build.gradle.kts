@@ -71,6 +71,8 @@ dependencies {
     implementation  (platform(libs.firebase.bom))
     implementation(libs.google.firebase.auth)
     implementation (libs.firebase.firestore)
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+
 
 //    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
