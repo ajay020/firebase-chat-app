@@ -15,8 +15,6 @@ import com.example.chatapp.ui.screens.ChatScreen
 import com.example.chatapp.ui.screens.ProfileScreen
 import com.example.chatapp.ui.screens.UserListScreen
 import com.example.chatapp.viewModel.AuthViewModel
-import java.net.URLDecoder
-import java.net.URLEncoder
 
 object Screens {
     const val AUTH = "auth"
@@ -73,13 +71,7 @@ fun AppNavGraph(
                     isOnline = isOnline,
                     lastSeen = lastSeen,
                     currentUser = it1,
-                    signOut = {
-                        authViewModel.signOut()
-                        navController.navigate(Screens.AUTH)
-                    },
-                    navigateToProfile = {
-                        navController.navigate(Screens.PROFILE)
-                    }
+
                 )
             }
         }
@@ -109,10 +101,15 @@ fun AppNavGraph(
                         )
                     }
 
+
+
                     // Navigate to the chat screen with the user's ID and display name
                     navController.navigate(
                         "${Screens.CHAT}/${uid}/${displayName}/${encodedPhotoUrl}/${isOnline}/${lastseen?.toString()}"
                     )
+                },
+                navigateToProfile = {
+                    navController.navigate(Screens.PROFILE)
                 }
             )
         }

@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Settings
@@ -64,8 +65,6 @@ import java.util.Date
 fun ChatScreen(
     chatViewModel: ChatViewModel = hiltViewModel(),
     currentUser: FirebaseUser,
-    signOut: () -> Unit,
-    navigateToProfile: () -> Unit,
     receiverUserId: String,
     receiverUserDisplayName: String,
     receiverUserPhotoUrl: String?,
@@ -86,8 +85,6 @@ fun ChatScreen(
                 receiverUserPhotoUrl = receiverUserPhotoUrl,
                 isOnline = isOnline,
                 lastSeen = lastSeen,
-                signOut = signOut,
-                navigateToProfile = navigateToProfile
             )
         }
     ) {
@@ -175,6 +172,20 @@ fun ChatMessageItem(message: Message, isCurrentUser: Boolean) {
     val backgroundColor =
         if (isCurrentUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
 
+
+    // Define the shape with rounded corners on one side
+    val shape = if (isCurrentUser) {
+        RoundedCornerShape(
+            topStart = 16.dp, topEnd = 16.dp,
+            bottomEnd = 0.dp, bottomStart = 16.dp
+        )
+    } else {
+        RoundedCornerShape(
+            topStart = 16.dp, topEnd = 16.dp,
+            bottomEnd = 16.dp, bottomStart = 0.dp
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -185,7 +196,7 @@ fun ChatMessageItem(message: Message, isCurrentUser: Boolean) {
             text = message.text,
             color = Color.White,
             modifier = Modifier
-                .background(backgroundColor)
+                .background(backgroundColor, shape)
                 .padding(8.dp)
         )
     }
@@ -199,8 +210,6 @@ fun ChatTopBar(
     receiverUserPhotoUrl: String? = null,
     isOnline: Boolean = false,
     lastSeen: Long? = null,
-    signOut: () -> Unit = {},
-    navigateToProfile: () -> Unit
 ) {
     val imageUrl = receiverUserPhotoUrl?.takeIf { it.isNotEmpty() }
 
@@ -251,11 +260,6 @@ fun ChatTopBar(
                 }
             }
         },
-        actions = {
-            IconButton(onClick = navigateToProfile) {
-                Icon(imageVector = Icons.Filled.Settings, contentDescription = "Send Message")
-            }
-        },
         modifier = modifier.background(Color.Gray),
         colors = TopAppBarColors(
             containerColor = Color.Cyan,
@@ -274,15 +278,17 @@ private fun ChatScreenPreview() {
         Message(senderId = "", text = "Hello", timestamp = null)
     )
 
-    ChatTopBar(
-        receiverUserNme = "John Doe",
-        receiverUserPhotoUrl = "",
-        signOut = {},
-        navigateToProfile = {},
-        isOnline = false,
-        lastSeen = 1724592794226,
-        modifier = Modifier
-    )
+//    ChatTopBar(
+//        receiverUserNme = "John Doe",
+//        receiverUserPhotoUrl = "",
+//        signOut = {},
+//        navigateToProfile = {},
+//        isOnline = false,
+//        lastSeen = 1724592794226,
+//        modifier = Modifier
+//    )
+
+    ChatMessageItem(message = messages.first(), isCurrentUser = true)
 
 
 }
