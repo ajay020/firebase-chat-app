@@ -24,6 +24,7 @@ class ChatViewModel @Inject constructor(
     fun sendMessage(messageText: String, senderId: String, receiverId: String) {
         val message = Message(
             senderId = senderId,
+            receiverId = receiverId,
             text = messageText,
             timestamp = Date()
         )

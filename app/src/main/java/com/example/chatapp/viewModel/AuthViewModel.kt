@@ -1,5 +1,7 @@
 package com.example.chatapp.viewModel
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val firebaseAuth: FirebaseAuth
+
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -34,34 +38,17 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signUpWithEmailPassword(displayName: String, email: String, password: String) {
+    fun signUpWithEmailPassword(email: String, password: String) {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
-                authRepository.signUpWithEmailPassword(displayName, email, password)
+                authRepository.signUpWithEmailPassword(email, password)
                     .collect { result ->
                         if (result.isSuccess) {
-                            // If the sign-up is successful, update the user's display name
+                            // sign-up is successful
                             val firebaseUser = result.getOrNull()
-                            if (firebaseUser != null) {
-                                // Ensure the updateUserProfile call is properly awaited
-                                val updateResult = profileRepository.saveUserProfile(
-                                    UserProfile(
-                                        uid = firebaseUser.uid,
-                                        displayName = generateDisplayName(email)
-                                    )
-                                )
-                                // Check if the update was successful
-                                if (updateResult.isSuccess) {
-                                    _authState.value = AuthState.Success(firebaseUser)
-                                } else {
-                                    _authState.value =
-                                        AuthState.Error("Failed to update user profile: ${updateResult.exceptionOrNull()?.message}")
-                                }
-                            } else {
-                                _authState.value =
-                                    AuthState.Error("Authentication failed. User is null.")
-                            }
+                            _authState.value = AuthState.Success(firebaseUser)
+
                         } else {
                             _authState.value = AuthState.Error(
                                 result.exceptionOrNull()?.message ?: "Unknown error"
@@ -105,7 +92,7 @@ class AuthViewModel @Inject constructor(
         onAuthSuccess: () -> Unit,
         onAuthFailure: (Exception) -> Unit
     ) {
-        val auth = FirebaseAuth.getInstance()
+        val auth = firebaseAuth
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         _authState.value = AuthState.Loading
 
@@ -133,6 +120,8 @@ class AuthViewModel @Inject constructor(
                             if (result.isSuccess) {
                                 _authState.value = AuthState.Success(user)
                                 onAuthSuccess()
+                                authRepository.updateUserStatus(true)
+                                authRepository.saveFcmToken(user.uid)
                             } else {
                                 _authState.value =
                                     AuthState.Error("Failed to update user profile: ${result.exceptionOrNull()?.message}")

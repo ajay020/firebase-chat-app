@@ -10,7 +10,9 @@ data class Chat(
 
 data class Message(
     val senderId: String = "",
+    val receiverId: String = "",
     val text: String = "",
     val timestamp: Date? = null,
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+
 )

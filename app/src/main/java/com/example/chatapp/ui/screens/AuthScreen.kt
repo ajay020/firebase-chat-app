@@ -70,8 +70,8 @@ fun AuthScreen(
         onSignInClick = { email, password ->
             authViewModel.signInWithEmailPassword(email, password)
         },
-        onSignUpClick = { displayName, email, password ->
-            authViewModel.signUpWithEmailPassword(displayName, email, password)
+        onSignUpClick = { email, password ->
+            authViewModel.signUpWithEmailPassword(email, password)
         },
         signInWithGoogle = {
             val signInIntent = googleSignInClient.signInIntent
@@ -85,13 +85,10 @@ fun AuthScreen(
 fun AuthScreenContent(
     authState: AuthState,
     onSignInClick: (String, String) -> Unit,
-    onSignUpClick: (String, String, String) -> Unit,
+    onSignUpClick: (String, String) -> Unit,
     signInWithGoogle: () -> Unit,
     onAuthSuccess: () -> Unit
 ) {
-    val displayName by remember {
-        mutableStateOf("")
-    }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLogin by remember { mutableStateOf(true) }
@@ -148,7 +145,7 @@ fun AuthScreenContent(
                 if (isLogin) {
                     onSignInClick(email, password)
                 } else {
-                    onSignUpClick(displayName, email, password)
+                    onSignUpClick(email, password)
                 }
             }
         )
@@ -228,7 +225,7 @@ fun AuthScreenPreview() {
     AuthScreenContent(
         authState = AuthState.Loading,
         onSignInClick = { _, _ -> },
-        onSignUpClick = { _, _, _ -> },
+        onSignUpClick = { _, _ -> },
         onAuthSuccess = {},
         signInWithGoogle = {}
     )
